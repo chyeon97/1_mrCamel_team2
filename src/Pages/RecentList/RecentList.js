@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import Filter from "Pages/RecentList/Filter";
 import Item from "Pages/RecentList/Item/Item";
 import {LOCAL_STORAGE} from 'Utils/constants';
+import {sortByRcent} from './utils/sortByRcent';
+import {sortByOrigin} from './utils/sortByOrigin';
+import {sortByPrice} from './utils/sortByPrice';
 
 class RecentList extends Component {
   constructor(props) {
@@ -12,15 +15,12 @@ class RecentList extends Component {
       recentItems: LOCAL_STORAGE.get("recentItems"),
       dislikeItems: LOCAL_STORAGE.get("dislikeItems"),
       origin_recentItems: LOCAL_STORAGE.get("recentItems"),
-      origin_reverse_recentItems: LOCAL_STORAGE.get("recentItems"),
       check: false,
-      click: false, // 낮은 가격 정렬 버튼
-      recentClick: false, // 최근 조회 정렬 버튼
+      priceClick: false, // 낮은 가격 정렬 버튼
+      recentClick: true, // 최근 조회 정렬 버튼
       history: this.props.history
     };
   }
-
-  // ========================= 브랜드 필터링 기능 ============================ //
 
   // 브랜드 선택 기능
   selectBrand = (res) => {
@@ -146,73 +146,48 @@ class RecentList extends Component {
       this.setFilterData(originItems);
     }
   }
-
-  //  =========== 정렬 기능 ==============
-
-  // ============ 낮은 가격 순 ======================
-
-  //  낮은 가격 순 클릭 이벤트 결과에 따라 조건에 맞는 함수 실행
-  clickAsc = (res) => {
-    this.setState({ click: res }, () => {
-      this.state.click ? this.sortByPriceAsc() : this.setOriginData();
+ // =====================================================
+  clickPriceAsc = (res) => {
+    this.setState({ priceClick: res }, () => {
+      this.state.priceClick ? this.sortByPriceAsc() : this.setOriginData();
     });
   };
 
-  // 낮은 가격 순으로 정렬 기능(수정)
   sortByPriceAsc = () => {
-    let newProductList = this.state.recentItems.sort((a, b) => {
-      return a.price - b.price;
-    });
+    let newProductList = sortByPrice(this.state.origin_recentItems);
+    this.setState({recentClick:false})
     this.setFilterData(newProductList);
   };
 
-  // ============ 최근 조회 순 ======================
-
-  //  최근 조회 순 클릭 이벤트 결과에 따라 조건에 맞는 함수 실행
   clickRecentAsc = (res) => {
     this.setState({ recentClick: res }, () => {
-      console.log(this.state.recentClick);
-      this.state.recentClick ? this.sortByRecentAsc() : this.setOriginData();
+      this.state.recentClick ? this.sortByRecentAsc(): this.setOriginData();
     });
   };
 
   sortByRecentAsc = () => {
-    let newItemData = [];
-    let itemData = "";
-    for (itemData of this.state.origin_recentItems) {
-      newItemData.push(itemData);
-    }
-    newItemData.reverse();
-    this.setState({ origin_reverse_recentItems: newItemData });
-    this.setFilterData(newItemData);
+    let recentDataList = sortByRcent(this.state.origin_recentItems);
+    this.setState({priceClick:false})
+    this.setFilterData(recentDataList);
   };
-  //  기존 조회 Storage로 정렬 방식으로 복귀
+
   setOriginData() {
-    let newItemData = [];
-    let itemData = "";
-    for (itemData of this.state.origin_recentItems) {
-      newItemData.push(itemData);
-    }
-    // newItemData.reverse()
-    // this.setState({origin_reverse_recentItems:newItemData})
-    this.setFilterData(newItemData);
+    let originDataList = sortByOrigin(this.state.origin_recentItems);
+    this.setFilterData(originDataList);
   }
 
-  // ======= Filter 컴포넌트에서 실제로 맵핑하는 데이터 setState 하는 함수 (공통) =========
   setFilterData(arrayList) {
     this.setState({ recentItems: arrayList });
   }
 
   render() {
-    
     return (
       <div style={{ width: "650px", flexDirection: "column", margin: "auto" }}>
         <Filter
           brand={this.selectBrand}
           setCheck={this.checkClick}
           check={this.state.check}
-          setClick={this.clickAsc}
-          click={this.state.click}
+          setClick={this.clickPriceAsc}
           setRecentClick={this.clickRecentAsc}
           recentClick={this.state.recentClick}
         />

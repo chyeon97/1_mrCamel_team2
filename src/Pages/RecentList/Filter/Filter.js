@@ -6,7 +6,6 @@ import Checkbox from 'Components/Checkbox';
 class Filter extends Component {
   constructor(props) {
     super(props);
-    console.log(this.props);
     this.state = {
       nike: false,
       guzzi: false,
@@ -63,7 +62,6 @@ class Filter extends Component {
     }
   };
     
-  //   낮은 가격순 정렬 클릭 이벤트
   sortClickEvent = (e) => {
     switch (e.target.id){
         case 'priceSort':
@@ -73,6 +71,7 @@ class Filter extends Component {
 
             } else {
                 this.setState({ priceSortTxt: true });
+                this.setState({recentSortTxt:false});
                 this.props.setClick(true);
             }
             break;
@@ -83,7 +82,9 @@ class Filter extends Component {
                 this.props.setRecentClick(false)
             }else{
                 this.setState({recentSortTxt:true})
-                this.props.setRecentClick(true)
+                this.setState({ priceSortTxt: false });
+                this.props.setRecentClick(true);
+                
             }
             break;
             default:

@@ -1,12 +1,15 @@
 import React, { Component } from "react";
 import mockData from "Utils/mockData.json";
 import {style} from './DetailedProductStyle';
+import {LOCAL_STORAGE} from 'Utils/constants';
+
 class DetailedProduct extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      dislikeItems: JSON.parse(localStorage.getItem(`dislikeItems`)),
-      recentItems: JSON.parse(localStorage.getItem("recentItems")),
+      
+      dislikeItems: LOCAL_STORAGE.get("dislikeItems"),
+      recentItems: LOCAL_STORAGE.get("recentItems"),
       ItemList: [],
       location: this.props.location,
       history: this.props.history,
@@ -82,8 +85,7 @@ class DetailedProduct extends Component {
   // 최근 조회 로컬 스토리지 저장.
   AddRecentProduct = (recentItems, ClickProd) => {
     recentItems.push(ClickProd);
-    const stringProds = JSON.stringify(recentItems);
-    localStorage.setItem("recentItems", stringProds);
+    LOCAL_STORAGE.set("recentItems", recentItems);
   };
 
   HandleProduct = (ClickProd) => {
@@ -98,7 +100,7 @@ class DetailedProduct extends Component {
       );
       this.AddRecentProduct(filterItems, ClickProd);
       this.setState({
-        recentItems: JSON.parse(localStorage.getItem("recentItems")),
+        recentItems: LOCAL_STORAGE.get("recentItems")
       });
     }
   };
@@ -106,8 +108,8 @@ class DetailedProduct extends Component {
   // 관심 없음 로컬 스토리지 저장
   AddDislikeProduct = (dislikeItems, ClickProd) => {
     dislikeItems.push(ClickProd);
-    const stringProds = JSON.stringify(dislikeItems);
-    localStorage.setItem("dislikeItems", stringProds);
+    LOCAL_STORAGE.set("dislikeItems", dislikeItems)
+
   };
 
   HandleDislike = (ClickProd) => {
@@ -124,7 +126,7 @@ class DetailedProduct extends Component {
       this.AddDislikeProduct(filterItems, ClickProd);
     }
     this.setState({
-      dislikeItems: JSON.parse(localStorage.getItem("dislikeItems")),
+      dislikeItems: LOCAL_STORAGE.get("dislikeItems"),
     });
     this.randomLoad(ClickProd, false);
   };
