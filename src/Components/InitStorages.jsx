@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-const CONST_DATA = require('Utils/ConstantData');
+const CONST_DATA = require('Utils/constants');
 
 class InitStorages extends Component {
   constructor(props) {

@@ -1,9 +1,7 @@
 import React, { Component } from "react";
-import Filter from "Components/Filter";
-import Item from "Components/Item";
-// import productData from 'Utils/mockData.json';
-import recentSample from "Utils/recentData.json";
-import dislikeSample from "Utils/dislikeData.json";
+import Filter from "Pages/RecentList/Filter";
+import Item from "Pages/RecentList/Item/Item";
+import {LOCAL_STORAGE} from 'Utils/constants';
 
 class RecentList extends Component {
   constructor(props) {
@@ -11,26 +9,15 @@ class RecentList extends Component {
 
     this.state = {
       brandName: [],
-      // recentItems: localStorage.setItem(
-      //   'recentItems',
-      //   JSON.stringify(recentSample)
-      // ),
-      recentItems: JSON.parse(localStorage.getItem("recentItems")),
-      dislikeItems: JSON.parse(localStorage.getItem("dislikeItems")),
-      // dislikeItems: localStorage.setItem(
-      //   'dislikeItems',
-      //   JSON.stringify(dislikeSample)
-      // ),
-      origin_recentItems: JSON.parse(localStorage.getItem("recentItems")),
-      origin_reverse_recentItems: JSON.parse(
-        localStorage.getItem("recentItems")
-      ),
+      recentItems: LOCAL_STORAGE.get("recentItems"),
+      dislikeItems: LOCAL_STORAGE.get("dislikeItems"),
+      origin_recentItems: LOCAL_STORAGE.get("recentItems"),
+      origin_reverse_recentItems: LOCAL_STORAGE.get("recentItems"),
       check: false,
       click: false, // 낮은 가격 정렬 버튼
       recentClick: false, // 최근 조회 정렬 버튼
       history: this.props.history
     };
-    // this.sortByPriceAsc = this.sortByPriceAsc.bind(this);
   }
 
   // ========================= 브랜드 필터링 기능 ============================ //
@@ -155,7 +142,7 @@ class RecentList extends Component {
     }
     // 브랜드 X
     else {
-      let originItems = JSON.parse(localStorage.getItem("recentItems"));
+      let originItems = LOCAL_STORAGE.get("recentItems");
       this.setFilterData(originItems);
     }
   }

@@ -1,28 +1,26 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import nike from 'assets/dummyImage.jpeg';
-
-
+import {style} from './ItemStyle';
+import {LOCAL_STORAGE} from 'Utils/constants';
 class Item extends Component {
   constructor(props){
     super(props);
     this.state=({
-      //로컬스토리지 관심없음 데이터 저장
-      dislikeData: JSON.parse(localStorage.getItem("dislikeItems")),
+      dislikeData:LOCAL_STORAGE.get("dislikeItems"),
       ContentList:[]
     })
   }
   
-  componentDidMount() {
-    fetch('http://localhost:3000/data/mock.json')
-      .then((res) => res.json())
-      .then((data) => {
-        this.setState({
-          ContentList: data,
-        });
-      });
+  // componentDidMount() {
+  //   fetch('http://localhost:3000/data/mock.json')
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       this.setState({
+  //         ContentList: data,
+  //       });
+  //     });
      
-  }
+  // }
 
   makeDislikeList=(item, idx)=>{
     for(let itemData of this.state.dislikeData){
@@ -82,32 +80,11 @@ class Item extends Component {
   }
 }
 
-const ItemBoxLayout = styled.div`
-  width: 100%;
-  min-height: 200px;
-  display: flex;
-  justify-content: center;
-  padding: 30px 60px;
-  border-left: 1px solid #cdcdcd;
-  border-right: 1px solid #cdcdcd;
-  border-bottom: 1px solid #cdcdcd;
-`;
-
-const InnerLayout = styled.div`
-  width: 100%;
-  height: auto;
-  display: flex;
-`;
-
-const ItemLayout = styled.div`
-  width: ${(props) => props.wd}%;
-`;
-const TextLayout = styled.div`
-  width: auto;
-  height: auto;
-  min-height: 10px;
-  font-size: ${(props) => props.fnt}px;
-  color: ${(props) => props.col};
-`;
-
 export default Item;
+
+const {
+  ItemBoxLayout,
+  InnerLayout,
+  ItemLayout,
+  TextLayout,
+} = style
