@@ -27,10 +27,6 @@ export const TextLayout = styled.div`
   font-size: ${(props) => props.fnt}px;
   color: ${(props) => props.col};
   cursor: ${(props) => props.cus};
-
-  &:hover {
-    cursor: pointer;
-  }
 `;
 export const Divider = styled.div`
   border-top: 0.5px solid #cdcdcd;

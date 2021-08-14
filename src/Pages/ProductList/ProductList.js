@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import Product from "../../Components/Product";
 import mockData from "Utils/mockData.json";
-
+import {LOCAL_STORAGE} from 'Utils/constants'
 class DetailPage extends React.Component {
   constructor() {
     super();

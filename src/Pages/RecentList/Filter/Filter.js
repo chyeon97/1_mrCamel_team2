@@ -145,11 +145,11 @@ class Filter extends Component {
             </TextLayout>
           </ItemLayout>
           <ItemLayout wd={28} jc={'space-between'}>
-            <TextLayout id={'recentSort'} fnt={13} col={this.state.recentSortTxt ? 'black' : 'gray'} onClick={this.sortClickEvent}>
+            <TextLayout id={'recentSort'} fnt={13} cus={'pointer'} col={this.state.recentSortTxt ? 'black' : 'gray'} onClick={this.sortClickEvent}>
               최근 조회 순
             </TextLayout>
             <Divider2 />
-            <TextLayout id={'priceSort'} fnt={13} col={this.state.priceSortTxt ? 'black' : 'gray'} onClick={this.sortClickEvent}>
+            <TextLayout id={'priceSort'} fnt={13} cus={'pointer'} col={this.state.priceSortTxt ? 'black' : 'gray'} onClick={this.sortClickEvent}>
               낮은 가격 순
             </TextLayout>
           </ItemLayout>

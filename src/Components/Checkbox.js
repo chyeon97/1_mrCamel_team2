@@ -24,6 +24,7 @@ class Checkbox extends Component {
 export default Checkbox;
 
 const CheckBoxContainer = styled.div`
+  cursor:pointer;
   display: inline-block;
   vertical-align: middle;
 `;

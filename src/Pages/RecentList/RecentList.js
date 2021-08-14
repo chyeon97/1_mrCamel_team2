@@ -20,15 +20,37 @@ class RecentList extends Component {
       check: false,
       priceClick: false, // 낮은 가격 정렬 버튼
       recentClick: true, // 최근 조회 정렬 버튼
-      history: this.props.history
+      history: this.props.history,
+      date:new Date(),
     };
   }
+
   componentDidMount(){
     let recentDataList = sortByRcent(this.state.recentItems);
     this.setState({recentItemList:recentDataList})
     let newProductList = sortByPrice(this.state.recentItems);
     this.setState({priceItemList:newProductList})
     this.setFilterData(recentDataList)
+    this.intervalTimer = setTimeout(this.tick, 1000);
+  }
+  tick = () =>{
+    this.setState({date: new Date()})
+  }
+
+  componentDidUpdate(prevProps, prevState){
+      if(prevState.date !== this.state.date){
+        this.intervalTimer = setTimeout(this.tick, 1000)
+        const hour = this.state.date.getHours();
+        const minute = this.state.date.getMinutes();
+        const second = this.state.date.getSeconds();
+        console.log(hour, minute, second)
+        
+        if(hour + minute + second === 0){
+          LOCAL_STORAGE.set("recentItems",[])
+          this.setState({recentItems: LOCAL_STORAGE.get("recentItems")})
+          this.setFilterData(this.state.recentItems)
+        } 
+    } 
   }
 
   selectBrand = (res) => {
