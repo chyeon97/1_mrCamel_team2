@@ -12,7 +12,7 @@ class Filter extends Component {
       stone: false,
       louis: false,
       priceSortTxt:false,
-      recentSortTxt:false,
+      recentSortTxt:true,
     };
   }
 
@@ -65,27 +65,21 @@ class Filter extends Component {
   sortClickEvent = (e) => {
     switch (e.target.id){
         case 'priceSort':
-            if (this.state.priceSortTxt) {
-                this.setState({ priceSortTxt: false });
-                this.props.setClick(false);
-
-            } else {
-                this.setState({ priceSortTxt: true });
-                this.setState({recentSortTxt:false});
-                this.props.setClick(true);
+            if(!this.state.priceSortTxt){
+              this.setState({ priceSortTxt: true });
+              this.setState({recentSortTxt:false});
+              this.props.setClick(true);
             }
             break;
         
         case 'recentSort':
-            if(this.state.recentSortTxt){
-                this.setState({recentSortTxt:false})
-                this.props.setRecentClick(false)
-            }else{
-                this.setState({recentSortTxt:true})
-                this.setState({ priceSortTxt: false });
-                this.props.setRecentClick(true);
-                
-            }
+          if(!this.state.recentSortTxt){
+            this.setState({recentSortTxt:true})
+            this.setState({ priceSortTxt: false });
+            this.props.setRecentClick(true);
+          }
+
+
             break;
             default:
     }

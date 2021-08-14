@@ -119,6 +119,7 @@ class DetailedProduct extends Component {
       dislikeItems = [];
       this.AddDislikeProduct(dislikeItems, ClickProd);
     } else {
+      
       const filterItems = dislikeItems.filter(
         (el) => JSON.stringify(el) !== JSON.stringify(ClickProd)
       );

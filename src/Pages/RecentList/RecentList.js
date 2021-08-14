@@ -3,8 +3,9 @@ import Filter from "Pages/RecentList/Filter";
 import Item from "Pages/RecentList/Item/Item";
 import {LOCAL_STORAGE} from 'Utils/constants';
 import {sortByRcent} from './utils/sortByRcent';
-import {sortByOrigin} from './utils/sortByOrigin';
 import {sortByPrice} from './utils/sortByPrice';
+import {filterByBrand} from './utils/filterByBrand';
+import {filterByDislike} from './utils/filterByDislike';
 
 class RecentList extends Component {
   constructor(props) {
@@ -14,167 +15,141 @@ class RecentList extends Component {
       brandName: [],
       recentItems: LOCAL_STORAGE.get("recentItems"),
       dislikeItems: LOCAL_STORAGE.get("dislikeItems"),
-      origin_recentItems: LOCAL_STORAGE.get("recentItems"),
+      recentItemList:{},
+      priceItemList:{},
       check: false,
       priceClick: false, // 낮은 가격 정렬 버튼
       recentClick: true, // 최근 조회 정렬 버튼
       history: this.props.history
     };
   }
+  componentDidMount(){
+    let recentDataList = sortByRcent(this.state.recentItems);
+    this.setState({recentItemList:recentDataList})
+    let newProductList = sortByPrice(this.state.recentItems);
+    this.setState({priceItemList:newProductList})
+    this.setFilterData(recentDataList)
+  }
 
-  // 브랜드 선택 기능
   selectBrand = (res) => {
-    // 기존에 선택했던 브랜드 경우 => 선택 제거
     if (this.state.brandName.includes(res)) {
       const findIndx = this.state.brandName.indexOf(res);
-      this.state.brandName.splice(findIndx, 1); // 필터링 제거 인덱스 삭제
+      this.state.brandName.splice(findIndx, 1); 
       this.setState({ brandName: this.state.brandName }, () => {
         this.filterData();
       });
     }
-    // 최초 선택 => 필터 기능
     else {
-      this.setState({ brandName: this.state.brandName.concat(res) }, () => {
-        this.filterData();
+      this.setState({ brandName: this.state.brandName.concat(res)}, ()=>{
+        this.filterData()
       });
     }
   };
-
+  
   filterData() {
-    // 관심없음 X
-    if (!this.state.check) {
-      // 브랜드 O
-      if (this.state.brandName.length > 0) {
-        let newItemData = [];
-        for (let i = 0; i < this.state.brandName.length; i++) {
-          let itemData = "";
-          for (itemData of this.state.origin_recentItems) {
-            // console.log(itemData.brand)
-            if (itemData.brand === this.state.brandName[i]) {
-              newItemData.push(itemData);
-            }
-          }
-        }
-        this.setFilterData(newItemData);
+      let filterdItems = ''
+      
+      if(this.state.recentClick){
+        filterdItems = filterByBrand(
+          this.state.brandName,
+          this.state.recentItemList
+        );
+        this.state.check &&
+          (filterdItems = filterByDislike(
+            filterdItems,
+            this.state.dislikeItems,
+            this.state.brandName
+          ));
       }
-      // 브랜드 X
-      else {
-        this.setFilterData(this.state.origin_recentItems);
+      else{
+        filterdItems = filterByBrand(
+          this.state.brandName,
+          this.state.priceItemList
+        );
+        this.state.check &&
+          (filterdItems = filterByDislike(
+            filterdItems,
+            this.state.dislikeItems,
+            this.state.brandName
+          ));
+        filterdItems = sortByPrice(filterdItems)
       }
-    }
-
-    // 관심없음 O
-    else {
-      // 브랜드 O
-      if (this.state.brandName.length > 0) {
-        let newItemData = [];
-        for (let i = 0; i < this.state.brandName.length; i++) {
-          let itemData = "";
-          for (itemData of this.state.recentItems) {
-            // console.log(itemData.brand)
-            if (itemData.brand === this.state.brandName[i]) {
-              newItemData.push(itemData);
-            }
-          }
-        }
-        // this.setFilterData(newItemData);
-      }
-    }
+        this.setFilterData(filterdItems)
   }
 
-  // ========================= 관심없음 필터링 기능 ============================ //
-
-  // 관심없음 체크박스
   checkClick = (res) => {
     this.setState({ check: res }, () => {
-      this.state.check ? this.setDislikeFilter() : this.setDefaultFilter();
+      this.state.check ? this.setDislikeFilter() : this.setRmDislikeFilter();
     });
   };
 
-  // 관심없음 O
   setDislikeFilter() {
-    let dislikeData = "";
-    let recentData = "";
-    let resultList = [];
-    let findTitle = [];
+    let filterdItems = ''
 
-    // 브랜드 O
-    if (this.state.brandName.length > 0) {
-      for (recentData of this.state.recentItems) {
-        for (dislikeData of this.state.dislikeItems) {
-          if (
-            dislikeData.title === recentData.title &&
-            dislikeData.price === recentData.price &&
-            dislikeData.brand === recentData.brand
-          ) {
-            findTitle.push(dislikeData.title);
-          }
-        }
-      }
+    if(this.state.recentClick){
+      filterdItems = filterByDislike(
+        this.state.recentItemList,
+        this.state.dislikeItems,
+        this.state.brandName
+      )
     }
-    // 브랜드 X
-    else {
-      for (recentData of this.state.origin_recentItems) {
-        for (dislikeData of this.state.dislikeItems) {
-          if (
-            dislikeData.title === recentData.title &&
-            dislikeData.price === recentData.price &&
-            dislikeData.brand === recentData.brand
-          ) {
-            findTitle.push(dislikeData.title);
-          }
-        }
-      }
+    else{
+      filterdItems = filterByDislike(
+        this.state.priceItemList,
+        this.state.dislikeItems,
+        this.state.brandName
+      ); 
+      filterdItems = sortByPrice(filterdItems)
     }
-    // 차집합 : 조회이력 내역 - 관심없음 내역의 제목(findTitle)
-    resultList = this.state.recentItems.filter(
-      (item) => !findTitle.includes(item.title)
-    );
-    console.log(resultList);
-    this.setFilterData(resultList);
+      this.setFilterData(filterdItems);
   }
 
-  // 관심없음 X
-  setDefaultFilter() {
-    // 브랜드 O
-    if (this.state.brandName.length > 0) {
-      this.filterData();
-    }
-    // 브랜드 X
-    else {
-      let originItems = LOCAL_STORAGE.get("recentItems");
-      this.setFilterData(originItems);
-    }
+  setRmDislikeFilter(){
+    let filterdItems = '';
+    this.state.recentClick
+      ? (filterdItems = filterByBrand(
+          this.state.brandName,
+          this.state.recentItemList
+        ))
+      : (filterdItems = filterByBrand(
+          this.state.brandName,
+          this.state.priceItemList
+        ));
+    this.setFilterData(filterdItems);
   }
- // =====================================================
+
   clickPriceAsc = (res) => {
     this.setState({ priceClick: res }, () => {
-      this.state.priceClick ? this.sortByPriceAsc() : this.setOriginData();
+        this.sortByPriceAsc()
     });
   };
 
   sortByPriceAsc = () => {
-    let newProductList = sortByPrice(this.state.origin_recentItems);
+    let filterdItems = '';
+    filterdItems = filterByBrand(
+      this.state.brandName,
+      this.state.priceItemList
+    );
+    filterdItems = sortByPrice(filterdItems)
     this.setState({recentClick:false})
-    this.setFilterData(newProductList);
+    this.setFilterData(filterdItems);
   };
 
   clickRecentAsc = (res) => {
     this.setState({ recentClick: res }, () => {
-      this.state.recentClick ? this.sortByRecentAsc(): this.setOriginData();
+        this.sortByRecentAsc()
     });
   };
 
   sortByRecentAsc = () => {
-    let recentDataList = sortByRcent(this.state.origin_recentItems);
+    let filterdItems = '';
+    filterdItems = filterByBrand(
+      this.state.brandName,
+      this.state.recentItemList
+    );
     this.setState({priceClick:false})
-    this.setFilterData(recentDataList);
+    this.setFilterData(filterdItems);
   };
-
-  setOriginData() {
-    let originDataList = sortByOrigin(this.state.origin_recentItems);
-    this.setFilterData(originDataList);
-  }
 
   setFilterData(arrayList) {
     this.setState({ recentItems: arrayList });
